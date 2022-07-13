@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 // import from export default
 // import Card from "../components/Card";
@@ -12,44 +13,7 @@ class HomePage extends Component {
     title: "-",
     content: "This is the home page",
     page: 1,
-    datas: [
-      {
-        id: 1,
-        title: "Wandavision Season 1",
-        image:
-          "https://cdn.europosters.eu/image/750/posters/wandavision-reality-rift-i106807.jpg",
-      },
-      {
-        id: 2,
-        title: "Wandavision Season 2",
-        image:
-          "https://image.tmdb.org/t/p/original/glKDfE6btIRcVB5zrjspRIs4r52.jpg",
-      },
-      {
-        id: 3,
-        title: "Wandavision Season 3",
-        image:
-          "https://cdn.europosters.eu/image/750/posters/wandavision-reality-rift-i106807.jpg",
-      },
-      {
-        id: 4,
-        title: "Wandavision Season 4 Wandavision Season 4 Wandavision Season 4",
-        image:
-          "https://cdn.europosters.eu/image/750/posters/wandavision-reality-rift-i106807.jpg",
-      },
-      {
-        id: 5,
-        title: "Wandavision Season 5",
-        image:
-          "https://image.tmdb.org/t/p/original/glKDfE6btIRcVB5zrjspRIs4r52.jpg",
-      },
-      {
-        id: 6,
-        title: "Wandavision Season 6",
-        image:
-          "https://cdn.europosters.eu/image/750/posters/wandavision-reality-rift-i106807.jpg",
-      },
-    ],
+    datas: [],
     information: {},
     loading: false,
   };
@@ -61,17 +25,69 @@ class HomePage extends Component {
 
   // side effect
   async componentDidMount() {
-    await this.fetchData();
+    this.fetchData();
+    // await this.fetchData2();
   }
 
   // ini fungsi yang dijalankan ketika component dimuat
+  // Konsumsi API menggunakan Axios
   async fetchData() {
-    // setTimeout(() => {
-    this.setState({
-      title: "Home Test",
-    });
-    console.log(this.state.title);
-    // }, 2000);
+    this.setState({ loading: true });
+    await axios
+      .get(
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`
+      )
+      .then((response) => {
+        const { results } = response.data;
+        if (results) {
+          this.setState({ datas: results });
+        }
+      })
+      .catch((error) => {
+        alert(error.toString());
+      })
+      .finally(() => this.setState({ loading: false }));
+    /*
+      axios
+      .get(
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`
+      )
+      .then((response) => {})
+      .catch((error) => {})
+      .finally(() => {});
+      */
+  }
+
+  // Konsumsi API menggunakan Fetch API
+  async fetchData2() {
+    this.setState({ loading: true });
+    var config = {
+      method: "get",
+      url: `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`,
+      headers: {
+        "Content-Type": "application/json", // ngasih info ke BE nya bahwa data yang dikirimkan adalah JSON
+      },
+    };
+    axios(config)
+      .then((response) => {
+        const { results } = response.data;
+        console.log(results);
+      })
+      .catch((error) => {
+        alert(error.toString());
+      })
+      .finally(() => this.setState({ loading: false }));
+    // await fetch(
+    //   `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`
+    // )
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log(data);
+    //   })
+    //   .catch((error) => {
+    //     alert(error.toString());
+    //   })
+    //   .finally(() => this.setState({ loading: false }));
   }
 
   render() {
@@ -82,7 +98,12 @@ class HomePage extends Component {
           <p>{this.state.content}</p>
           <div className="grid grid-flow-row auto-rows-max grid-cols-2 md:grid-cols-4 lg:grid-cols-5 m-2 gap-3">
             {this.state.datas.map((data) => (
-              <Card2 key={data.id} title={data.title} image={data.image} />
+              <Card2
+                key={data.id}
+                title={data.title}
+                image={data.poster_path}
+                votes={data.vote_average}
+              />
             ))}
           </div>
         </div>
