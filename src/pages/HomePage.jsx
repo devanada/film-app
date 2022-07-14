@@ -4,8 +4,9 @@ import axios from "axios";
 // import from export default
 // import Card from "../components/Card";
 // import from named export
-import { Card2 } from "../components/Card";
+import Card from "../components/Card";
 import Header from "../components/Header";
+import { WithRouter } from "../utils/Navigation";
 
 class HomePage extends Component {
   // constructor
@@ -13,7 +14,7 @@ class HomePage extends Component {
     title: "-",
     content: "This is the home page",
     page: 1,
-    datas: [],
+    movies: [],
     information: {},
     loading: false,
   };
@@ -25,37 +26,30 @@ class HomePage extends Component {
 
   // side effect
   async componentDidMount() {
-    this.fetchData();
-    // await this.fetchData2();
+    await this.fetchData();
+    // this.state.movies.map((movie) => {
+    //   console.log(movie.title);
+    // });
   }
 
   // ini fungsi yang dijalankan ketika component dimuat
   // Konsumsi API menggunakan Axios
-  async fetchData() {
+  async fetchData(page) {
     this.setState({ loading: true });
     await axios
       .get(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=${page}`
       )
       .then((response) => {
         const { results } = response.data;
         if (results) {
-          this.setState({ datas: results });
+          this.setState({ movies: results });
         }
       })
       .catch((error) => {
         alert(error.toString());
       })
       .finally(() => this.setState({ loading: false }));
-    /*
-      axios
-      .get(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&page=1`
-      )
-      .then((response) => {})
-      .catch((error) => {})
-      .finally(() => {});
-      */
   }
 
   // Konsumsi API menggunakan Fetch API
@@ -90,29 +84,34 @@ class HomePage extends Component {
     //   .finally(() => this.setState({ loading: false }));
   }
 
+  handleScroll = (e) => {
+    let element = e.target;
+    const bottom =
+      element.scrollHeight - element.scrollTop === element.clientHeight;
+    if (bottom) {
+      this.fetchData(this.state.page + 1);
+    }
+  };
+
   render() {
     return (
-      <>
+      <div
+        className="w-full h-screen overflow-auto"
+        onScroll={this.handleScroll}
+      >
         <Header />
-        <div className="w-full h-screen">
-          <p>{this.state.content}</p>
-          <div className="grid grid-flow-row auto-rows-max grid-cols-2 md:grid-cols-4 lg:grid-cols-5 m-2 gap-3">
-            {this.state.datas.map((data) => (
-              <Card2
-                key={data.id}
-                title={data.title}
-                image={data.poster_path}
-                votes={data.vote_average}
-              />
-            ))}
-          </div>
+        <p>{this.state.content}</p>
+        <div className="grid grid-flow-row auto-rows-max grid-cols-2 md:grid-cols-4 lg:grid-cols-5 m-2 gap-3">
+          {this.state.movies.map((movie) => (
+            <Card key={movie.id} data={movie} />
+          ))}
         </div>
-      </>
+      </div>
     );
   }
 }
 
-export default HomePage;
+export default WithRouter(HomePage);
 
 /*
 let strVal = "Hello World";
