@@ -7,7 +7,7 @@ import { WithRouter } from "../utils/Navigation";
 // const Card = (props) => {
 const Card = ({ data, navigate }) => {
   return (
-    <div className="p-3 flex flex-col justify-between bg-neutral-500 rounded shadow-lg shadow-black">
+    <div className="p-3 flex flex-col justify-between bg-neutral-500 dark:bg-zinc-800 rounded shadow-lg shadow-black">
       <div onClick={() => navigate(`/detail/${data.id}`, { replace: true })}>
         <img
           src={

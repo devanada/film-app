@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import HomePage from "../pages/HomePage";
@@ -6,9 +6,23 @@ import DetailMovie from "../pages/DetailMovie";
 import MyFavorite from "../pages/MyFavorite";
 import TestPage from "../pages/TestPage";
 
-export default class App extends Component {
-  render() {
-    return (
+import { ThemeContext } from "../utils/context";
+
+const App = () => {
+  const [theme, setTheme] = useState("light");
+
+  const background = useMemo(() => ({ theme, setTheme }), [theme]);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={background}>
       <Router>
         <Routes>
           {/* if (path === "/") */}
@@ -26,6 +40,8 @@ export default class App extends Component {
           <Route path="*" element={<div>404 Error Not Found</div>} />
         </Routes>
       </Router>
-    );
-  }
-}
+    </ThemeContext.Provider>
+  );
+};
+
+export default App;
