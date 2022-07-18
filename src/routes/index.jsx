@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import HomePage from "../pages/HomePage";
 import DetailMovie from "../pages/DetailMovie";
@@ -7,8 +8,10 @@ import MyFavorite from "../pages/MyFavorite";
 import TestPage from "../pages/TestPage";
 
 import { ThemeContext } from "../utils/context";
+import { reduxAction } from "../utils/redux/actions/action";
 
 const App = () => {
+  const dispatch = useDispatch();
   const [theme, setTheme] = useState("light");
 
   const background = useMemo(() => ({ theme, setTheme }), [theme]);
@@ -20,6 +23,13 @@ const App = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [theme]);
+
+  useEffect(() => {
+    const getMovies = localStorage.getItem("favMovies");
+    if (getMovies) {
+      dispatch(reduxAction("ADD_FAVORITE", JSON.parse(getMovies)));
+    }
+  }, []);
 
   return (
     <ThemeContext.Provider value={background}>

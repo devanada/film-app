@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 
 // import from export default
@@ -7,10 +8,12 @@ import axios from "axios";
 import Card from "../components/Card";
 import Header from "../components/Header";
 import { WithRouter } from "../utils/Navigation";
+import { reduxAction } from "../utils/redux/actions/action";
 
 const HomePage = () => {
   // constructor
   // [state, updater] = useState(initialValue)
+  const dispatch = useDispatch();
   const [title, setTitle] = useState("-");
   const [content, setContent] = useState("This is the home page");
   const [page, setPage] = useState(1);
@@ -101,6 +104,25 @@ const HomePage = () => {
     }
   };
 
+  const handleFav = (movie) => {
+    const getMovies = localStorage.getItem("favMovies");
+    if (getMovies) {
+      const parsedMovies = JSON.parse(getMovies);
+      /*
+      cek movie yang diinputkan ada di local storage atau tidak (find).
+      kalau gak ada, push data ke local storage
+      kalau ada, kasih alert (film sudah ditambahkan ke favorit)
+      */
+      parsedMovies.push(movie);
+      localStorage.setItem("favMovies", JSON.stringify(parsedMovies));
+      dispatch(reduxAction("ADD_FAVORITE", parsedMovies));
+    } else {
+      localStorage.setItem("favMovies", JSON.stringify([movie]));
+      dispatch(reduxAction("ADD_FAVORITE", [movie]));
+    }
+    alert("Movie added to favorites");
+  };
+
   return (
     <div
       className="w-full h-screen overflow-auto bg-white dark:bg-black"
@@ -110,7 +132,7 @@ const HomePage = () => {
       <p>{content}</p>
       <div className="grid grid-flow-row auto-rows-max grid-cols-2 md:grid-cols-4 lg:grid-cols-5 m-2 gap-3">
         {movies.map((movie) => (
-          <Card key={movie.id} data={movie} />
+          <Card key={movie.id} data={movie} onClick={() => handleFav(movie)} />
         ))}
       </div>
     </div>

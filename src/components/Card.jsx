@@ -1,11 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import Button from "./Button";
 import { WithRouter } from "../utils/Navigation";
 
 // const Card = (props) => {
-const Card = ({ data, navigate }) => {
+const Card = ({ data, navigate, onClick }) => {
   return (
     <div className="p-3 flex flex-col justify-between bg-neutral-500 dark:bg-zinc-800 rounded shadow-lg shadow-black">
       <div onClick={() => navigate(`/detail/${data.id}`, { replace: true })}>
@@ -20,10 +19,7 @@ const Card = ({ data, navigate }) => {
         />
         <p className="text-center text-white font-bold">{data.title}</p>
       </div>
-      <Button
-        label="Add to favorite"
-        onClick={() => navigate(`/detail/${data.id}`)}
-      />
+      <Button label="Add to favorite" onClick={onClick} />
     </div>
   );
 };

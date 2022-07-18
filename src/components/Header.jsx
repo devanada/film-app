@@ -29,8 +29,8 @@ const Header = () => {
           onClick={() => handleChangeTheme("dark")}
         />
       )}
-      <Link to="/test" className="text-white">
-        TEST PAGE
+      <Link to="/favorites" className="text-white">
+        Favorites
       </Link>
     </nav>
   );
