@@ -30,7 +30,7 @@ const HomePage = () => {
   // side effect
   // -> useEffect dipanggil sekali ketika komponen dimuat, componentDidMount
   useEffect(() => {
-    fetchData();
+    fetchData(1);
   }, []);
   // -> useEffect selalu dipanggil
   // useEffect(() => {
